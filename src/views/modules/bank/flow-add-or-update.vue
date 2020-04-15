@@ -61,7 +61,7 @@ export default {
         this.$refs["dataForm"].resetFields();
         if (this.dataForm.fId) {
           this.$http({
-            url: this.$http.adornUrl(`/ware/flow/info/${this.dataForm.fId}`),
+            url: this.$http.adornUrl(`/bank/flow/info/${this.dataForm.fId}`),
             method: "get",
             params: this.$http.adornParams()
           }).then(({ data }) => {
@@ -81,7 +81,7 @@ export default {
         if (valid) {
           this.$http({
             url: this.$http.adornUrl(
-              `/ware/flow/${!this.dataForm.fId ? "save" : "update"}`
+              `/bank/flow/${!this.dataForm.fId ? "save" : "update"}`
             ),
             method: "post",
             data: this.$http.adornData({

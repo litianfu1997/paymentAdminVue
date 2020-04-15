@@ -41,7 +41,7 @@
         label="流水号">
       </el-table-column>
       <el-table-column
-        prop="desc"
+        prop="descs"
         header-align="center"
         align="center"
         label="订单详细">

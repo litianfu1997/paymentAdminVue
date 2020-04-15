@@ -17,8 +17,8 @@
       <el-form-item label="流水号" prop="flowId">
         <el-input v-model="dataForm.flowId" placeholder="流水号"></el-input>
       </el-form-item>
-      <el-form-item label="订单详细" prop="desc">
-        <el-input v-model="dataForm.desc" placeholder="订单详细"></el-input>
+      <el-form-item label="订单详细" prop="descs">
+        <el-input v-model="dataForm.descs" placeholder="订单详细"></el-input>
       </el-form-item>
       <el-form-item label="账户id" prop="aId">
         <el-input v-model="dataForm.aId" placeholder="账户id"></el-input>
@@ -40,7 +40,7 @@ export default {
         orderId: 0,
         orderAccount: "",
         flowId: "",
-        desc: "",
+        descs: "",
         aId: ""
       },
       dataRule: {
@@ -50,7 +50,7 @@ export default {
         flowId: [
           { required: true, message: "流水号不能为空", trigger: "blur" }
         ],
-        desc: [
+        descs: [
           { required: true, message: "订单详细不能为空", trigger: "blur" }
         ],
         aId: [{ required: true, message: "账户id不能为空", trigger: "blur" }]
@@ -72,9 +72,10 @@ export default {
             params: this.$http.adornParams()
           }).then(({ data }) => {
             if (data && data.code === 0) {
+              console.log(data)
               this.dataForm.orderAccount = data.order.orderAccount;
               this.dataForm.flowId = data.order.flowId;
-              this.dataForm.desc = data.order.desc;
+              this.dataForm.descs = data.order.descs;
               this.dataForm.aId = data.order.aId;
             }
           });
@@ -94,7 +95,7 @@ export default {
               orderId: this.dataForm.orderId || undefined,
               orderAccount: this.dataForm.orderAccount,
               flowId: this.dataForm.flowId,
-              desc: this.dataForm.desc,
+              descs: this.dataForm.descs,
               aId: this.dataForm.aId
             })
           }).then(({ data }) => {
