@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('bank:account:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('bank:account:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('syslog:syslog:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('syslog:syslog:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -23,46 +23,51 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="aId"
+        prop="id"
         header-align="center"
         align="center"
-        label="账户主键">
+        label="日志表主键">
       </el-table-column>
       <el-table-column
-        prop="aAccount"
+        prop="username"
         header-align="center"
         align="center"
-        label="账户号">
+        :show-overflow-tooltip="true"
+        label="操作用户">
       </el-table-column>
       <el-table-column
-        prop="aPassword"
+        prop="operation"
         header-align="center"
         align="center"
-        label="密码">
+        :show-overflow-tooltip="true"
+        label="操作">
       </el-table-column>
       <el-table-column
-        prop="aMoney"
+        prop="method"
         header-align="center"
         align="center"
-        label="账户余额">
+        :show-overflow-tooltip="true"
+        label="执行方法">
       </el-table-column>
       <el-table-column
-        prop="aName"
+        prop="prams"
         header-align="center"
         align="center"
-        label="姓名">
+        :show-overflow-tooltip="true"
+        label="参数">
       </el-table-column>
       <el-table-column
-        prop="aAge"
+        prop="operationTime"
         header-align="center"
         align="center"
-        label="年龄">
+        label="执行时长[ms]">
       </el-table-column>
       <el-table-column
-        prop="aSex"
+        prop="createTime"
         header-align="center"
         align="center"
-        label="性别">
+        :show-overflow-tooltip="true"
+        label="创建时间">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -71,8 +76,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.aId)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.aId)">删除</el-button>
+          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -91,7 +96,7 @@
 </template>
 
 <script>
-  import AddOrUpdate from './account-add-or-update'
+  import AddOrUpdate from './syslog-add-or-update'
   export default {
     data () {
       return {
@@ -104,7 +109,8 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        admin:"",
       }
     },
     components: {
@@ -118,7 +124,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/bank/account/list'),
+          url: this.$http.adornUrl('/syslog/syslog/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -158,10 +164,22 @@
           this.$refs.addOrUpdate.init(id)
         })
       },
+      // 获取当前管理员信息
+      getUserInfo () {
+        this.$http({
+          url: this.$http.adornUrl('/sys/user/info'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.admin = data.user.username
+          }
+        })
+      },
       // 删除
       deleteHandle (id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.aId
+          return item.id
         })
         this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
           confirmButtonText: '确定',
@@ -169,7 +187,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/bank/account/delete'),
+            url: this.$http.adornUrl('/syslog/syslog/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {
@@ -188,6 +206,9 @@
           })
         })
       }
-    }
+    },
+    created() {
+      this.getUserInfo();
+    },
   }
 </script>
